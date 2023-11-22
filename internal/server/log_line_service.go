@@ -57,8 +57,8 @@ func (s *LogLineService) ListLogLines(
 ) (*connect.Response[loggerv1.ListLogLinesResponse], error) {
 	logLines, err := s.queries.ListLogLines(ctx, db.ListLogLinesParams{
 		TagID:         sql.NullInt64{Int64: req.Msg.GetTagId(), Valid: req.Msg.TagId != nil},
-		EndDateTime:   sql.NullTime{Time: req.Msg.Start.AsTime(), Valid: req.Msg.Start != nil},
-		StartDateTime: sql.NullTime{Time: req.Msg.End.AsTime(), Valid: req.Msg.End != nil},
+		EndDateTime:   sql.NullTime{Time: req.Msg.End.AsTime(), Valid: req.Msg.End != nil},
+		StartDateTime: sql.NullTime{Time: req.Msg.Start.AsTime(), Valid: req.Msg.Start != nil},
 	})
 	if err != nil {
 		return nil, err

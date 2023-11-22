@@ -34,7 +34,7 @@ func main() {
 func initDb(ddl string) (*db.Queries, error) {
 	ctx := context.Background()
 
-	database, err := sql.Open("sqlite3", ":memory:?_foreign_keys=on")
+	database, err := sql.Open("sqlite3", "./db.sqlite3?_foreign_keys=on")
 	if err != nil {
 		return nil, err
 	}

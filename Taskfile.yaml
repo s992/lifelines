@@ -8,9 +8,8 @@ tasks:
 
   run:
     desc: Runs backend and frontend
-    deps:
-      - run-go
-      - run-js
+    cmds:
+      - npx concurrently "task run-go" "task run-js"
 
   run-go:
     desc: Runs backend server

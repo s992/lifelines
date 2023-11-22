@@ -17,7 +17,8 @@ where
   and (
     ll.created_at <= sqlc.narg ('endDateTime')
     or sqlc.narg ('endDateTime') is null
-  );
+  )
+order by ll.created_at desc;
 
 -- name: CreateLogLine :one
 insert into

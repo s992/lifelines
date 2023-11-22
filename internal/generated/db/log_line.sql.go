@@ -61,6 +61,7 @@ where
     ll.created_at <= ?3
     or ?3 is null
   )
+order by ll.created_at desc
 `
 
 type ListLogLinesParams struct {
