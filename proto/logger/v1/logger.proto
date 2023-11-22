@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package logger.v1;
+
+import "google/protobuf/timestamp.proto";
+
+message Empty {}
+
+message Tag {
+  int64 tag_id = 1;
+  string name = 2;
+}
+
+message LogLine {
+  int64 log_line_id = 1;
+  double value = 2;
+  optional string description = 3;
+  google.protobuf.Timestamp created_at = 4;
+  Tag tag = 5;
+}
+
+message ListTagsRequest {}
+
+message ListTagsResponse {
+  repeated Tag tags = 1;
+}
+
+message SearchTagsRequest {
+  string query = 1;
+}
+
+message SearchTagsResponse {
+  repeated Tag tags = 1;
+}
+
+message CreateTagRequest {
+  string name = 1;
+}
+
+message CreateTagResponse {
+  Tag tag = 1;
+}
+
+service TagService {
+  rpc ListTags (ListTagsRequest) returns (ListTagsResponse) {}
+  rpc SearchTags (SearchTagsRequest) returns (SearchTagsResponse) {}
+  rpc CreateTag (CreateTagRequest) returns (CreateTagResponse) {}
+}
+
+message ListLogLinesRequest {
+  optional int64 tag_id = 1;
+  optional google.protobuf.Timestamp start = 2;
+  optional google.protobuf.Timestamp end = 3;
+}
+
+message ListLogLinesResponse {
+  repeated LogLine log_lines = 1;
+}
+
+message CreateLogLineRequest {
+  int64 tag_id = 1;
+  double value = 2;
+  optional string description = 3;
+}
+
+message CreateLogLineResponse {
+  LogLine log_line = 1;
+}
+
+service LogLineService {
+  rpc ListLogLines (ListLogLinesRequest) returns (ListLogLinesResponse) {}
+  rpc CreateLogLine (CreateLogLineRequest) returns (CreateLogLineResponse) {}
+}

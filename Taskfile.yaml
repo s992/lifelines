@@ -1,0 +1,74 @@
+version: "3"
+
+tasks:
+  default:
+    silent: true
+    cmds:
+      - task -l
+
+  run:
+    desc: Runs backend and frontend
+    deps:
+      - run-go
+      - run-js
+
+  run-go:
+    desc: Runs backend server
+    cmds:
+      - go run main.go
+
+  run-js:
+    desc: Runs frontend
+    cmds:
+      - npm run dev
+
+  deps:
+    desc: Runs all dependency targets
+    deps:
+      - deps-go
+      - deps-js
+
+  deps-go:
+    desc: Runs go mod tidy
+    cmds:
+      - go mod tidy
+
+  deps-js:
+    desc: Runs npm install
+    cmds:
+      - npm i
+
+  gen:
+    desc: Runs all codegen targets
+    deps:
+      - task: gen-sqlc
+      - task: gen-proto
+
+  gen-sqlc:
+    desc: Generates db code with sqlc
+    cmds:
+      - rm -rf ./internal/generated/db
+      - podman run --rm -v $(pwd):/src -w /src docker.io/sqlc/sqlc generate
+
+  gen-proto:
+    desc: Generates proto code with buf
+    cmds:
+      - rm -rf ./internal/generated/proto
+      - npx buf generate proto
+
+  lint:
+    desc: Runs all lint targets
+    deps:
+      - lint-proto
+      - lint-js
+
+  lint-proto:
+    desc: Lints proto files
+    cmds:
+      - npx buf lint proto
+
+  lint-js:
+    desc: Lints client code
+    cmds:
+      - npm run lint
+
