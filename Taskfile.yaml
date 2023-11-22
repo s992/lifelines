@@ -54,6 +54,7 @@ tasks:
     desc: Generates proto code with buf
     cmds:
       - rm -rf ./internal/generated/proto
+      - rm -rf ./client/generated/proto
       - npx buf generate proto
 
   lint:

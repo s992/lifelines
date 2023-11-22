@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 	"github.com/s992/logger/internal/generated/db"
 	"github.com/s992/logger/internal/generated/proto/logger/v1/loggerv1connect"
 )
@@ -21,6 +22,10 @@ func Run(config *ServerConfig) error {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedHeaders: []string{"*"},
+	}))
 
 	tagService := NewTagService(config.Queries)
 	tagSvcPath, tagSvcHandler := loggerv1connect.NewTagServiceHandler(tagService)
