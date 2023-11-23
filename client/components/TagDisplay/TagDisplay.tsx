@@ -1,7 +1,7 @@
 import { Anchor } from '@mantine/core';
 
 import { Tag } from '../../generated/proto/logger/v1/logger_pb';
-import { getTagColor } from './getTagColor';
+import { getTagColor } from '../../util/getTagColor';
 
 type Props = {
   tag: Tag;

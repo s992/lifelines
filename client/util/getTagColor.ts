@@ -1,4 +1,4 @@
-import { Tag } from '../../generated/proto/logger/v1/logger_pb';
+import { Tag } from '../generated/proto/logger/v1/logger_pb';
 
 const COLORS = [
   '#f44336',
@@ -22,11 +22,17 @@ const COLORS = [
   '#000000',
 ] as const;
 
-export function getTagColor(tag: Tag): string {
-  const hash = hashString(tag.name);
-  const index = Math.abs(hash) % COLORS.length;
+const lookup: Record<string, string> = {};
 
-  return COLORS[index];
+export function getTagColor(tag: Tag): string {
+  if (!lookup[tag.name]) {
+    const hash = hashString(tag.name);
+    const index = Math.abs(hash) % COLORS.length;
+
+    lookup[tag.name] = COLORS[index];
+  }
+
+  return lookup[tag.name];
 }
 
 function hashString(tag: string) {
