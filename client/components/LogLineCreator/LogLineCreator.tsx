@@ -1,11 +1,14 @@
 import { Input } from '@mantine/core';
 import { getHotkeyHandler, useFocusWithin, useHotkeys } from '@mantine/hooks';
+import { IconHash, IconPlus } from '@tabler/icons-react';
 import { useRef, useState } from 'react';
 
 import {
   CreateLogLineRequest,
   Tag,
 } from '../../generated/proto/logger/v1/logger_pb';
+import { vars } from '../../theme';
+import { getTagColor } from '../../util/getTagColor';
 import { completion, input, inputWrapper, wrapper } from './LogLineCreator.css';
 
 type Props = {
@@ -22,6 +25,8 @@ export function LogLineCreator({ tags, onCreate }: Props) {
   const [inputValue, setInputValue] = useState('');
   const [suggestedTag, setSuggestedTag] = useState<Tag | null>(null);
   const focus = () => inputRef.current?.focus();
+  const PrefixIconCmp =
+    !inputValue.length || suggestedTag ? IconHash : IconPlus;
 
   useHotkeys([
     ['shift+Digit3', focus],
@@ -44,6 +49,7 @@ export function LogLineCreator({ tags, onCreate }: Props) {
         })
           .then(() => {
             setInputValue('');
+            setSuggestedTag(null);
           })
           .catch((err) => {
             console.error(err);
@@ -54,15 +60,16 @@ export function LogLineCreator({ tags, onCreate }: Props) {
         <Input
           ref={inputRef}
           variant="unstyled"
-          leftSection="#"
+          leftSection={<PrefixIconCmp size={16} />}
           type="text"
           autoComplete="off"
           value={inputValue}
           placeholder={focused ? 'tag value (optional description)' : undefined}
           onChange={(e) => {
             const value = e.target.value;
+            const [tagName] = value.split(' ');
             const suggestion = value
-              ? tags.find(({ name }) => name.startsWith(value))
+              ? tags.find(({ name }) => name.startsWith(tagName))
               : null;
 
             setInputValue(value);
@@ -87,10 +94,16 @@ export function LogLineCreator({ tags, onCreate }: Props) {
                 const nextValue = `${suggestedTag.name} `;
 
                 setInputValue(nextValue);
-                setSuggestedTag(null);
               },
             ],
           ])}
+          styles={{
+            input: {
+              color: suggestedTag
+                ? getTagColor(suggestedTag)
+                : vars.colors.blue.filled,
+            },
+          }}
           classNames={{
             input,
             wrapper: inputWrapper,

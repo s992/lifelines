@@ -1,22 +1,23 @@
 import { Table } from '@mantine/core';
 import { format } from 'date-fns';
 
-import { LogLine } from '../../generated/proto/logger/v1/logger_pb';
+import { LogLine, Tag } from '../../generated/proto/logger/v1/logger_pb';
 import { TagDisplay } from '../TagDisplay';
 import { autoWidthTd, table } from './LogLineTable.css';
 
 type Props = {
   lines: LogLine[];
+  onTagClick?: (tag: Tag) => void;
 };
 
-export function LogLineTable({ lines }: Props) {
+export function LogLineTable({ lines, onTagClick }: Props) {
   return (
     <Table classNames={{ table }}>
       <Table.Tbody>
         {lines.map((line) => (
           <Table.Tr key={line.logLineId}>
             <Table.Td className={autoWidthTd}>
-              {line.tag && <TagDisplay tag={line.tag} />}
+              {line.tag && <TagDisplay tag={line.tag} onClick={onTagClick} />}
             </Table.Td>
             <Table.Td className={autoWidthTd}>
               {line.createdAt
