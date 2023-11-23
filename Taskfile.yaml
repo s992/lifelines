@@ -75,3 +75,14 @@ tasks:
     cmds:
       - npm run lint
 
+  docker-build:
+    desc: Builds local docker image
+    cmds:
+      - podman build . -t s992/lifelines:local
+
+  docker-run:
+    desc: Runs local docker image
+    deps:
+      - task: docker-build
+    cmds:
+      - podman run --rm -p 8080:80 localhost/s992/lifelines:local

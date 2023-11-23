@@ -1,15 +1,14 @@
 import { Input } from '@mantine/core';
-import { getHotkeyHandler, useFocusWithin, useHotkeys } from '@mantine/hooks';
+import { useFocusWithin, useHotkeys } from '@mantine/hooks';
 import { IconHash, IconPlus } from '@tabler/icons-react';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
 import {
   CreateLogLineRequest,
   Tag,
 } from '../../generated/proto/lifelines/v1/lifelines_pb';
-import { vars } from '../../theme';
-import { getTagColor } from '../../util/getTagColor';
 import { completion, input, inputWrapper, wrapper } from './LogLineCreator.css';
+import { useSuggestTag } from './useSuggestTag';
 
 type Props = {
   tags: Tag[];
@@ -22,11 +21,16 @@ type Props = {
 export function LogLineCreator({ tags, onCreate }: Props) {
   const { ref: wrapperRef, focused } = useFocusWithin();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [inputValue, setInputValue] = useState('');
-  const [suggestedTag, setSuggestedTag] = useState<Tag | null>(null);
   const focus = () => inputRef.current?.focus();
-  const PrefixIconCmp =
-    !inputValue.length || suggestedTag ? IconHash : IconPlus;
+  const {
+    inputValue,
+    matchedTag,
+    suggestionText,
+    tagColor,
+    reset,
+    inputEventHandlers,
+  } = useSuggestTag(inputRef, tags);
+  const PrefixIconCmp = !inputValue.length || matchedTag ? IconHash : IconPlus;
 
   useHotkeys([
     ['shift+Digit3', focus],
@@ -48,8 +52,7 @@ export function LogLineCreator({ tags, onCreate }: Props) {
           description: description.join(' '),
         })
           .then(() => {
-            setInputValue('');
-            setSuggestedTag(null);
+            reset();
           })
           .catch((err) => {
             console.error(err);
@@ -65,55 +68,18 @@ export function LogLineCreator({ tags, onCreate }: Props) {
           autoComplete="off"
           value={inputValue}
           placeholder={focused ? 'tag value (optional description)' : undefined}
-          onChange={(e) => {
-            const value = e.target.value;
-            const [tagName] = value.split(' ');
-            const suggestion = value
-              ? tags.find(({ name }) => name.startsWith(tagName))
-              : null;
-
-            setInputValue(value);
-            setSuggestedTag(suggestion ?? null);
-          }}
-          onKeyDown={getHotkeyHandler([
-            [
-              'Escape',
-              () => {
-                setInputValue('');
-                setSuggestedTag(null);
-                inputRef.current?.blur();
-              },
-            ],
-            [
-              'Tab',
-              () => {
-                if (!suggestedTag) {
-                  return;
-                }
-
-                const nextValue = `${suggestedTag.name} `;
-
-                setInputValue(nextValue);
-              },
-            ],
-          ])}
           styles={{
             input: {
-              color: suggestedTag
-                ? getTagColor(suggestedTag)
-                : vars.colors.blue.filled,
+              color: tagColor,
             },
           }}
           classNames={{
             input,
             wrapper: inputWrapper,
           }}
+          {...inputEventHandlers}
         />
-        <div className={completion}>
-          {suggestedTag?.name
-            .slice(inputValue.length)
-            .padStart(suggestedTag.name.length, ' ')}
-        </div>
+        <div className={completion}>{suggestionText}</div>
       </div>
     </form>
   );
