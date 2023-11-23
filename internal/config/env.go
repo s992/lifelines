@@ -7,8 +7,8 @@ import (
 )
 
 type envConfig struct {
-	DbDir string `mapstructure:"LOGGER_DB_DIR"`
-	Port  int    `mapstructure:"LOGGER_PORT"`
+	DbDir string `mapstructure:"LIFELINES_DB_DIR"`
+	Port  int    `mapstructure:"LIFELINES_PORT"`
 }
 
 var Env *envConfig

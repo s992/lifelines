@@ -21,8 +21,8 @@ COPY --from=node-build /etc/lifelines/dist ./dist
 RUN go build -o ./dist/lifelines
 
 FROM debian:12
-ENV LOGGER_DB_DIR=/var/lifelines/
-ENV LOGGER_PORT=80
+ENV LIFELINES_DB_DIR=/var/lifelines/
+ENV LIFELINES_PORT=80
 EXPOSE 80
 RUN mkdir -p /var/lifelines
 COPY --from=go-build /etc/lifelines/dist/lifelines /usr/bin/lifelines

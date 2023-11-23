@@ -10,7 +10,9 @@ import { App } from './App';
 import './hacks';
 import { theme } from './theme';
 
-const transport = createConnectTransport({ baseUrl: 'http://localhost:8080' });
+const transport = createConnectTransport({
+  baseUrl: import.meta.env.PROD ? '/' : 'http://localhost:8080',
+});
 const queryClient = new QueryClient();
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
