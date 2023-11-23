@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"database/sql"
-	_ "embed"
+	"embed"
+	"fmt"
+	"path"
 
 	_ "github.com/mattn/go-sqlite3"
 
@@ -15,26 +17,31 @@ import (
 //go:embed sql/schema.sql
 var ddl string
 
+//go:embed dist/client/*
+var clientFiles embed.FS
+
 func main() {
 	config.InitEnv()
 
-	queries, err := initDb(ddl)
+	queries, err := initDb(ddl, config.Env.DbDir)
 	if err != nil {
 		panic(err)
 	}
 
 	if err := server.Run(&server.ServerConfig{
-		Port:    config.Env.Port,
-		Queries: queries,
+		ClientFiles: clientFiles,
+		Port:        config.Env.Port,
+		Queries:     queries,
 	}); err != nil {
 		panic(err)
 	}
 }
 
-func initDb(ddl string) (*db.Queries, error) {
+func initDb(ddl string, dir string) (*db.Queries, error) {
 	ctx := context.Background()
 
-	database, err := sql.Open("sqlite3", "./db.sqlite3?_foreign_keys=on")
+	dbPath := path.Clean(fmt.Sprintf("%s/logger.sqlite3", dir))
+	database, err := sql.Open("sqlite3", fmt.Sprintf("file:%s?_foreign_keys=on", dbPath))
 	if err != nil {
 		return nil, err
 	}

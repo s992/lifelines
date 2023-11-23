@@ -1,6 +1,7 @@
 package server
 
 import (
+	"embed"
 	"fmt"
 	"net/http"
 
@@ -12,8 +13,9 @@ import (
 )
 
 type ServerConfig struct {
-	Port    int
-	Queries *db.Queries
+	ClientFiles embed.FS
+	Port        int
+	Queries     *db.Queries
 }
 
 func Run(config *ServerConfig) error {
@@ -34,6 +36,8 @@ func Run(config *ServerConfig) error {
 	logLineService := NewLogLineService(config.Queries)
 	logLineSvcPath, logLineSvcHandler := loggerv1connect.NewLogLineServiceHandler(logLineService)
 	r.Mount(logLineSvcPath, logLineSvcHandler)
+
+	r.Handle("/*", SPAHandler(config.ClientFiles))
 
 	addr := fmt.Sprintf(":%d", config.Port)
 	fmt.Printf("Server running at %s\n", addr)
