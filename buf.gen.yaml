@@ -2,7 +2,7 @@ version: v1
 managed:
   enabled: true
   go_package_prefix:
-    default: github.com/s992/logger/internal/generated/proto
+    default: github.com/s992/lifelines/internal/generated/proto
     except:
       - buf.build/googleapis/googleapis
 plugins:

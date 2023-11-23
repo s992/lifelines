@@ -1,4 +1,4 @@
-module github.com/s992/logger
+module github.com/s992/lifelines
 
 go 1.21.1
 

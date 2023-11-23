@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"connectrpc.com/connect"
-	"github.com/s992/logger/internal/generated/db"
-	loggerv1 "github.com/s992/logger/internal/generated/proto/logger/v1"
+	"github.com/s992/lifelines/internal/generated/db"
+	lifelinesv1 "github.com/s992/lifelines/internal/generated/proto/lifelines/v1"
 )
 
 type TagService struct {
@@ -18,15 +18,15 @@ func NewTagService(queries *db.Queries) *TagService {
 
 func (s *TagService) CreateTag(
 	ctx context.Context,
-	req *connect.Request[loggerv1.CreateTagRequest],
-) (*connect.Response[loggerv1.CreateTagResponse], error) {
+	req *connect.Request[lifelinesv1.CreateTagRequest],
+) (*connect.Response[lifelinesv1.CreateTagResponse], error) {
 	tag, err := s.queries.CreateTag(ctx, req.Msg.Name)
 	if err != nil {
 		return nil, err
 	}
 
-	res := connect.NewResponse(&loggerv1.CreateTagResponse{
-		Tag: &loggerv1.Tag{
+	res := connect.NewResponse(&lifelinesv1.CreateTagResponse{
+		Tag: &lifelinesv1.Tag{
 			TagId: tag.ID,
 			Name:  tag.Name,
 		},
@@ -37,14 +37,14 @@ func (s *TagService) CreateTag(
 
 func (s *TagService) ListTags(
 	ctx context.Context,
-	req *connect.Request[loggerv1.ListTagsRequest],
-) (*connect.Response[loggerv1.ListTagsResponse], error) {
+	req *connect.Request[lifelinesv1.ListTagsRequest],
+) (*connect.Response[lifelinesv1.ListTagsResponse], error) {
 	tags, err := s.queries.ListTags(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	res := connect.NewResponse(&loggerv1.ListTagsResponse{
+	res := connect.NewResponse(&lifelinesv1.ListTagsResponse{
 		Tags: tagsToList(tags),
 	})
 
@@ -53,23 +53,23 @@ func (s *TagService) ListTags(
 
 func (s *TagService) SearchTags(
 	ctx context.Context,
-	req *connect.Request[loggerv1.SearchTagsRequest],
-) (*connect.Response[loggerv1.SearchTagsResponse], error) {
+	req *connect.Request[lifelinesv1.SearchTagsRequest],
+) (*connect.Response[lifelinesv1.SearchTagsResponse], error) {
 	tags, err := s.queries.SearchTags(ctx, req.Msg.Query)
 	if err != nil {
 		return nil, err
 	}
 
-	res := connect.NewResponse(&loggerv1.SearchTagsResponse{
+	res := connect.NewResponse(&lifelinesv1.SearchTagsResponse{
 		Tags: tagsToList(tags),
 	})
 
 	return res, nil
 }
 
-func tagsToList(tagResults []db.Tag) (tags []*loggerv1.Tag) {
+func tagsToList(tagResults []db.Tag) (tags []*lifelinesv1.Tag) {
 	for _, tag := range tagResults {
-		tags = append(tags, &loggerv1.Tag{
+		tags = append(tags, &lifelinesv1.Tag{
 			TagId: tag.ID,
 			Name:  tag.Name,
 		})

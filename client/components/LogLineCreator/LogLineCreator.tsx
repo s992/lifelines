@@ -6,7 +6,7 @@ import { useRef, useState } from 'react';
 import {
   CreateLogLineRequest,
   Tag,
-} from '../../generated/proto/logger/v1/logger_pb';
+} from '../../generated/proto/lifelines/v1/lifelines_pb';
 import { vars } from '../../theme';
 import { getTagColor } from '../../util/getTagColor';
 import { completion, input, inputWrapper, wrapper } from './LogLineCreator.css';

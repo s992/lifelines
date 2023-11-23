@@ -10,12 +10,12 @@ import { LogLineTable } from './components/LogLineTable';
 import {
   createLogLine,
   listLogLines,
-} from './generated/proto/logger/v1/logger-LogLineService_connectquery';
+} from './generated/proto/lifelines/v1/lifelines-LogLineService_connectquery';
 import {
   createTag,
   listTags,
-} from './generated/proto/logger/v1/logger-TagService_connectquery';
-import { ListLogLinesRequest } from './generated/proto/logger/v1/logger_pb';
+} from './generated/proto/lifelines/v1/lifelines-TagService_connectquery';
+import { ListLogLinesRequest } from './generated/proto/lifelines/v1/lifelines_pb';
 
 export function App() {
   const queryClient = useQueryClient();

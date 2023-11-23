@@ -1,4 +1,4 @@
-import { Tag } from '../generated/proto/logger/v1/logger_pb';
+import { Tag } from '../generated/proto/lifelines/v1/lifelines_pb';
 
 const COLORS = [
   '#f44336',

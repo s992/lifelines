@@ -8,8 +8,8 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
-	"github.com/s992/logger/internal/generated/db"
-	"github.com/s992/logger/internal/generated/proto/logger/v1/loggerv1connect"
+	"github.com/s992/lifelines/internal/generated/db"
+	"github.com/s992/lifelines/internal/generated/proto/lifelines/v1/lifelinesv1connect"
 )
 
 type ServerConfig struct {
@@ -30,11 +30,11 @@ func Run(config *ServerConfig) error {
 	}))
 
 	tagService := NewTagService(config.Queries)
-	tagSvcPath, tagSvcHandler := loggerv1connect.NewTagServiceHandler(tagService)
+	tagSvcPath, tagSvcHandler := lifelinesv1connect.NewTagServiceHandler(tagService)
 	r.Mount(tagSvcPath, tagSvcHandler)
 
 	logLineService := NewLogLineService(config.Queries)
-	logLineSvcPath, logLineSvcHandler := loggerv1connect.NewLogLineServiceHandler(logLineService)
+	logLineSvcPath, logLineSvcHandler := lifelinesv1connect.NewLogLineServiceHandler(logLineService)
 	r.Mount(logLineSvcPath, logLineSvcHandler)
 
 	r.Handle("/*", SPAHandler(config.ClientFiles))

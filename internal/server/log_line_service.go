@@ -5,8 +5,8 @@ import (
 	"database/sql"
 
 	"connectrpc.com/connect"
-	"github.com/s992/logger/internal/generated/db"
-	loggerv1 "github.com/s992/logger/internal/generated/proto/logger/v1"
+	"github.com/s992/lifelines/internal/generated/db"
+	lifelinesv1 "github.com/s992/lifelines/internal/generated/proto/lifelines/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -20,8 +20,8 @@ func NewLogLineService(queries *db.Queries) *LogLineService {
 
 func (s *LogLineService) CreateLogLine(
 	ctx context.Context,
-	req *connect.Request[loggerv1.CreateLogLineRequest],
-) (*connect.Response[loggerv1.CreateLogLineResponse], error) {
+	req *connect.Request[lifelinesv1.CreateLogLineRequest],
+) (*connect.Response[lifelinesv1.CreateLogLineResponse], error) {
 	tag, err := s.queries.GetTag(ctx, req.Msg.TagId)
 	if err != nil {
 		return nil, err
@@ -36,12 +36,12 @@ func (s *LogLineService) CreateLogLine(
 		return nil, err
 	}
 
-	res := connect.NewResponse(&loggerv1.CreateLogLineResponse{
-		LogLine: &loggerv1.LogLine{
+	res := connect.NewResponse(&lifelinesv1.CreateLogLineResponse{
+		LogLine: &lifelinesv1.LogLine{
 			LogLineId:   logLine.ID,
 			Value:       logLine.Value,
 			Description: logLine.Description,
-			Tag: &loggerv1.Tag{
+			Tag: &lifelinesv1.Tag{
 				TagId: tag.ID,
 				Name:  tag.Name,
 			},
@@ -53,8 +53,8 @@ func (s *LogLineService) CreateLogLine(
 
 func (s *LogLineService) ListLogLines(
 	ctx context.Context,
-	req *connect.Request[loggerv1.ListLogLinesRequest],
-) (*connect.Response[loggerv1.ListLogLinesResponse], error) {
+	req *connect.Request[lifelinesv1.ListLogLinesRequest],
+) (*connect.Response[lifelinesv1.ListLogLinesResponse], error) {
 	logLines, err := s.queries.ListLogLines(ctx, db.ListLogLinesParams{
 		TagID:         sql.NullInt64{Int64: req.Msg.GetTagId(), Valid: req.Msg.TagId != nil},
 		EndDateTime:   sql.NullTime{Time: req.Msg.End.AsTime(), Valid: req.Msg.End != nil},
@@ -64,21 +64,21 @@ func (s *LogLineService) ListLogLines(
 		return nil, err
 	}
 
-	lines := []*loggerv1.LogLine{}
+	lines := []*lifelinesv1.LogLine{}
 	for _, line := range logLines {
-		lines = append(lines, &loggerv1.LogLine{
+		lines = append(lines, &lifelinesv1.LogLine{
 			LogLineId:   line.ID,
 			Value:       line.Value,
 			Description: line.Description,
 			CreatedAt:   timestamppb.New(line.CreatedAt),
-			Tag: &loggerv1.Tag{
+			Tag: &lifelinesv1.Tag{
 				TagId: line.TagID,
 				Name:  line.TagName,
 			},
 		})
 	}
 
-	res := connect.NewResponse(&loggerv1.ListLogLinesResponse{LogLines: lines})
+	res := connect.NewResponse(&lifelinesv1.ListLogLinesResponse{LogLines: lines})
 
 	return res, nil
 }

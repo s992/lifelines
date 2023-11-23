@@ -1,7 +1,7 @@
 import { Table } from '@mantine/core';
 import { format } from 'date-fns';
 
-import { LogLine, Tag } from '../../generated/proto/logger/v1/logger_pb';
+import { LogLine, Tag } from '../../generated/proto/lifelines/v1/lifelines_pb';
 import { TagDisplay } from '../TagDisplay';
 import { autoWidthTd, table } from './LogLineTable.css';
 
