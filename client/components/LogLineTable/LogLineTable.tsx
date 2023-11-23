@@ -1,8 +1,8 @@
-import { Table, TableTbody, TableTd, TableTr } from '@mantine/core';
+import { Table } from '@mantine/core';
 import { format } from 'date-fns';
 
 import { LogLine } from '../../generated/proto/logger/v1/logger_pb';
-import { table } from './LogLineTable.css';
+import { autoWidthTd, table } from './LogLineTable.css';
 
 type Props = {
   lines: LogLine[];
@@ -11,20 +11,20 @@ type Props = {
 export function LogLineTable({ lines }: Props) {
   return (
     <Table classNames={{ table }}>
-      <TableTbody>
+      <Table.Tbody>
         {lines.map((line) => (
-          <TableTr key={line.logLineId}>
-            <TableTd>#{line.tag?.name}</TableTd>
-            <TableTd>
+          <Table.Tr key={line.logLineId}>
+            <Table.Td className={autoWidthTd}>#{line.tag?.name}</Table.Td>
+            <Table.Td className={autoWidthTd}>
               {line.createdAt
                 ? format(line.createdAt.toDate(), 'MM-dd-yyyy hh:mm:ss aa')
                 : '-'}
-            </TableTd>
-            <TableTd>{line.value}</TableTd>
-            <TableTd>{line.description}</TableTd>
-          </TableTr>
+            </Table.Td>
+            <Table.Td className={autoWidthTd}>{line.value}</Table.Td>
+            <Table.Td>{line.description}</Table.Td>
+          </Table.Tr>
         ))}
-      </TableTbody>
+      </Table.Tbody>
     </Table>
   );
 }

@@ -1,5 +1,6 @@
 import { Input } from '@mantine/core';
-import { useState } from 'react';
+import { getHotkeyHandler, useFocusWithin, useHotkeys } from '@mantine/hooks';
+import { useRef, useState } from 'react';
 
 import {
   CreateLogLineRequest,
@@ -16,8 +17,17 @@ type Props = {
 };
 
 export function LogLineCreator({ tags, onCreate }: Props) {
+  const { ref: wrapperRef, focused } = useFocusWithin();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState('');
   const [suggestedTag, setSuggestedTag] = useState<Tag | null>(null);
+  const focus = () => inputRef.current?.focus();
+
+  useHotkeys([
+    ['shift+Digit3', focus],
+    ['i', focus],
+    ['shift+i', focus],
+  ]);
 
   return (
     <form
@@ -40,13 +50,15 @@ export function LogLineCreator({ tags, onCreate }: Props) {
           });
       }}
     >
-      <div className={wrapper}>
+      <div ref={wrapperRef} className={wrapper}>
         <Input
+          ref={inputRef}
           variant="unstyled"
           leftSection="#"
           type="text"
           autoComplete="off"
           value={inputValue}
+          placeholder={focused ? 'tag value (optional description)' : undefined}
           onChange={(e) => {
             const value = e.target.value;
             const suggestion = value
@@ -56,17 +68,29 @@ export function LogLineCreator({ tags, onCreate }: Props) {
             setInputValue(value);
             setSuggestedTag(suggestion ?? null);
           }}
-          onKeyDown={(e) => {
-            if (e.key !== 'Tab' || !suggestedTag) {
-              return;
-            }
+          onKeyDown={getHotkeyHandler([
+            [
+              'Escape',
+              () => {
+                setInputValue('');
+                setSuggestedTag(null);
+                inputRef.current?.blur();
+              },
+            ],
+            [
+              'Tab',
+              () => {
+                if (!suggestedTag) {
+                  return;
+                }
 
-            e.preventDefault();
-            const nextValue = `${suggestedTag.name} `;
+                const nextValue = `${suggestedTag.name} `;
 
-            setInputValue(nextValue);
-            setSuggestedTag(null);
-          }}
+                setInputValue(nextValue);
+                setSuggestedTag(null);
+              },
+            ],
+          ])}
           classNames={{
             input,
             wrapper: inputWrapper,

@@ -1,9 +1,10 @@
 import { Timestamp } from '@bufbuild/protobuf';
-import { Stack } from '@mantine/core';
+import { AppShell, Center, Stack } from '@mantine/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { subHours } from 'date-fns';
 import { useState } from 'react';
 
+import { container } from './App.css';
 import { LogLineCreator } from './components/LogLineCreator';
 import { LogLineTable } from './components/LogLineTable';
 import {
@@ -28,35 +29,39 @@ export function App() {
   const createLog = useMutation(createLogLine.useMutation({}));
 
   return (
-    <Stack>
-      {tags && (
-        <LogLineCreator
-          tags={tags.tags}
-          onCreate={async (tagName, logLinePayload) => {
-            let tagId = logLinePayload.tagId;
+    <AppShell>
+      <Center>
+        <Stack className={container}>
+          {tags && (
+            <LogLineCreator
+              tags={tags.tags}
+              onCreate={async (tagName, logLinePayload) => {
+                let tagId = logLinePayload.tagId;
 
-            if (!tagId) {
-              const newTag = await createNewTag.mutateAsync({
-                name: tagName,
-              });
+                if (!tagId) {
+                  const newTag = await createNewTag.mutateAsync({
+                    name: tagName,
+                  });
 
-              tagId = newTag.tag?.tagId;
-            }
+                  tagId = newTag.tag?.tagId;
+                }
 
-            await createLog.mutateAsync({
-              ...logLinePayload,
-              tagId,
-            });
-            await queryClient.invalidateQueries({
-              queryKey: listTags.getQueryKey(),
-            });
-            await queryClient.invalidateQueries({
-              queryKey: listLogLines.getQueryKey(),
-            });
-          }}
-        />
-      )}
-      {lines && <LogLineTable lines={lines.logLines} />}
-    </Stack>
+                await createLog.mutateAsync({
+                  ...logLinePayload,
+                  tagId,
+                });
+                await queryClient.invalidateQueries({
+                  queryKey: listTags.getQueryKey(),
+                });
+                await queryClient.invalidateQueries({
+                  queryKey: listLogLines.getQueryKey(),
+                });
+              }}
+            />
+          )}
+          {lines && <LogLineTable lines={lines.logLines} />}
+        </Stack>
+      </Center>
+    </AppShell>
   );
 }
