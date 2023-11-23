@@ -13,6 +13,9 @@ tasks:
 
   run-go:
     desc: Runs backend server
+    env:
+      LOGGER_DB_DIR: /tmp
+      LOGGER_PORT: 8080
     cmds:
       - go run main.go
 
