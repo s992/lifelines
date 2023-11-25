@@ -8,9 +8,15 @@ where
 
 -- name: ListTags :many
 select
-  *
+  t.*
 from
-  tag;
+  tag t
+  left join log_line ll on ll.tag_id = t.id
+  and ll.created_at >= datetime ('now', '-7 days')
+group by
+  t.id
+order by
+  count(ll.id) desc;
 
 -- name: SearchTags :many
 select

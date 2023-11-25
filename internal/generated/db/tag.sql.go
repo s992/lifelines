@@ -41,9 +41,15 @@ func (q *Queries) GetTag(ctx context.Context, id int64) (Tag, error) {
 
 const listTags = `-- name: ListTags :many
 select
-  id, name
+  t.id, t.name
 from
-  tag
+  tag t
+  left join log_line ll on ll.tag_id = t.id
+  and ll.created_at >= datetime ('now', '-7 days')
+group by
+  t.id
+order by
+  count(ll.id) desc
 `
 
 func (q *Queries) ListTags(ctx context.Context) ([]Tag, error) {
